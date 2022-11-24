@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if type -p nix &>/dev/null ; then
-  echo "Aborting: Nix is already installed at $(type -p nix)"
-  exit
+check_nix() {
+ if type -p nix &>/dev/null ; then
+    echo "Aborting: Nix is already installed at $(type -p nix)"
+    exit
+  fi
+}
+
+check_nix
+
+# On self-hosted macOS runners, this will be left dirty, so we can short-circuit the install.
+if [ -f /etc/bashrc.backup-before-nix ]; then
+    . /etc/bashrc
+    check_nix
 fi
 
 # GitHub command to put the following log messages into a group which is collapsed by default
